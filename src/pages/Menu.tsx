@@ -1,8 +1,5 @@
-import { useEffect, useState } from 'react';
-import { menuAPI } from '@/services/api';
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useToast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
 
 interface MenuItem {
   id: string;
@@ -11,37 +8,29 @@ interface MenuItem {
   description: string;
 }
 
+const mockMenuItems: MenuItem[] = [
+  { id: '1', name: 'Biryani', price: 350, description: 'Aromatic basmati rice cooked with tender meat and traditional spices' },
+  { id: '2', name: 'Pulao', price: 450, description: 'Fragrant rice dish with vegetables and aromatic herbs' },
+  { id: '3', name: 'Chicken Karahi', price: 550, description: 'Spicy chicken curry cooked in a traditional wok with tomatoes and green chilies' },
+  { id: '4', name: 'Mutton Korma', price: 650, description: 'Tender mutton in rich, creamy gravy with cashews and aromatic spices' },
+  { id: '5', name: 'Butter Chicken', price: 500, description: 'Creamy tomato-based curry with tender chicken pieces' },
+  { id: '6', name: 'Dal Makhani', price: 250, description: 'Slow-cooked black lentils in butter and cream' },
+  { id: '7', name: 'Palak Paneer', price: 300, description: 'Fresh cottage cheese cubes in creamy spinach gravy' },
+  { id: '8', name: 'Naan', price: 50, description: 'Soft, fluffy traditional bread baked in tandoor' },
+  { id: '9', name: 'Tandoori Chicken', price: 600, description: 'Marinated chicken grilled to perfection in clay oven' },
+  { id: '10', name: 'Seekh Kabab', price: 400, description: 'Minced meat skewers with spices, grilled over charcoal' },
+  { id: '11', name: 'Nihari', price: 700, description: 'Slow-cooked beef stew with aromatic spices and bone marrow' },
+  { id: '12', name: 'Haleem', price: 350, description: 'Thick stew of wheat, barley, meat and lentils' },
+  { id: '13', name: 'Fish Tikka', price: 450, description: 'Marinated fish fillets grilled with herbs and spices' },
+  { id: '14', name: 'Chana Masala', price: 200, description: 'Chickpeas in tangy tomato and onion gravy' },
+  { id: '15', name: 'Raita', price: 100, description: 'Cool yogurt with cucumber, mint and spices' },
+  { id: '16', name: 'Gulab Jamun', price: 150, description: 'Sweet milk dumplings soaked in rose-flavored syrup' },
+];
+
 export default function Menu() {
-  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
+  const [menuItems] = useState<MenuItem[]>(mockMenuItems);
+  const loading = false;
 
-  useEffect(() => {
-    loadMenu();
-  }, []);
-
-  const loadMenu = async () => {
-    try {
-      const data = await menuAPI.getAll();
-      setMenuItems(data);
-    } catch (error: any) {
-      toast({
-        title: 'Error',
-        description: error.response?.data?.message || 'Failed to load menu',
-        variant: 'destructive',
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-secondary/30">
