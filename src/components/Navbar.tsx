@@ -1,10 +1,12 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCart } from '@/contexts/CartContext';
 import { Button } from '@/components/ui/button';
-import { UtensilsCrossed, LogOut } from 'lucide-react';
+import { UtensilsCrossed, LogOut, ShoppingCart } from 'lucide-react';
 
 export const Navbar = () => {
   const { isAuthenticated, isAdmin, logout } = useAuth();
+  const { getTotalItems } = useCart();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -30,6 +32,18 @@ export const Navbar = () => {
             </Link>
             <Link to="/contact" className="text-foreground hover:text-primary transition-colors">
               Contact
+            </Link>
+            
+            <Link to="/cart" className="relative">
+              <Button variant="outline" size="sm" className="gap-2">
+                <ShoppingCart className="h-4 w-4" />
+                Cart
+                {getTotalItems() > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground rounded-full w-5 h-5 flex items-center justify-center text-xs font-semibold">
+                    {getTotalItems()}
+                  </span>
+                )}
+              </Button>
             </Link>
             
             {isAuthenticated ? (

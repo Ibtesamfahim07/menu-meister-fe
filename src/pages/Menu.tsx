@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import biryaniImg from '@/assets/biryani.jpg';
 import pulaoImg from '@/assets/pulao.jpg';
 import chickenKarahiImg from '@/assets/chicken-karahi.jpg';
@@ -45,6 +47,7 @@ const mockMenuItems: MenuItem[] = [
 ];
 
 export default function Menu() {
+  const navigate = useNavigate();
   const [menuItems] = useState<MenuItem[]>(mockMenuItems);
   const loading = false;
 
@@ -66,7 +69,11 @@ export default function Menu() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {menuItems.map((item) => (
-              <Card key={item.id} className="group relative overflow-hidden hover:shadow-lg transition-all duration-300">
+              <Card 
+                key={item.id} 
+                className="group relative overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer"
+                onClick={() => navigate(`/menu/${item.id}`)}
+              >
                 <div 
                   className="absolute inset-0 bg-cover bg-center transition-opacity duration-300 opacity-30 group-hover:opacity-10"
                   style={{ backgroundImage: `url(${item.image})` }}
@@ -81,7 +88,16 @@ export default function Menu() {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <CardDescription className="text-base">{item.description}</CardDescription>
+                    <CardDescription className="text-base mb-4">{item.description}</CardDescription>
+                    <Button 
+                      className="w-full" 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/menu/${item.id}`);
+                      }}
+                    >
+                      View Details
+                    </Button>
                   </CardContent>
                 </div>
               </Card>
