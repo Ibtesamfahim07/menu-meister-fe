@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react';
-import { menuAPI, adminAPI } from '@/services/api';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -8,13 +7,30 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Pencil, Trash2, Loader2, Users, ShoppingBag } from 'lucide-react';
+import { Plus, Pencil, Trash2, Users, ShoppingBag } from 'lucide-react';
+import biryaniImg from '@/assets/biryani.jpg';
+import pulaoImg from '@/assets/pulao.jpg';
+import chickenKarahiImg from '@/assets/chicken-karahi.jpg';
+import muttonKormaImg from '@/assets/mutton-korma.jpg';
+import butterChickenImg from '@/assets/butter-chicken.jpg';
+import dalMakhaniImg from '@/assets/dal-makhani.jpg';
+import palakPaneerImg from '@/assets/palak-paneer.jpg';
+import naanImg from '@/assets/naan.jpg';
+import tandooriChickenImg from '@/assets/tandoori-chicken.jpg';
+import seekhKababImg from '@/assets/seekh-kabab.jpg';
+import nihariImg from '@/assets/nihari.jpg';
+import haleemImg from '@/assets/haleem.jpg';
+import fishTikkaImg from '@/assets/fish-tikka.jpg';
+import chanaMasalaImg from '@/assets/chana-masala.jpg';
+import raitaImg from '@/assets/raita.jpg';
+import gulabJamunImg from '@/assets/gulab-jamun.jpg';
 
 interface MenuItem {
   id: string;
   name: string;
   price: number;
   description: string;
+  image: string;
 }
 
 interface User {
@@ -34,35 +50,35 @@ const mockUsers: User[] = [
   { id: '5', name: 'Alice Williams', email: 'alice@example.com', joinedDate: '2024-03-25', role: 'Customer' },
 ];
 
+// Mock menu items (frontend only)
+const initialMenuItems: MenuItem[] = [
+  { id: '1', name: 'Biryani', price: 350, description: 'Aromatic basmati rice cooked with tender meat and traditional spices', image: biryaniImg },
+  { id: '2', name: 'Pulao', price: 450, description: 'Fragrant rice dish with vegetables and aromatic herbs', image: pulaoImg },
+  { id: '3', name: 'Chicken Karahi', price: 550, description: 'Spicy chicken curry cooked in a traditional wok with tomatoes and green chilies', image: chickenKarahiImg },
+  { id: '4', name: 'Mutton Korma', price: 650, description: 'Tender mutton in rich, creamy gravy with cashews and aromatic spices', image: muttonKormaImg },
+  { id: '5', name: 'Butter Chicken', price: 500, description: 'Creamy tomato-based curry with tender chicken pieces', image: butterChickenImg },
+  { id: '6', name: 'Dal Makhani', price: 250, description: 'Slow-cooked black lentils in butter and cream', image: dalMakhaniImg },
+  { id: '7', name: 'Palak Paneer', price: 300, description: 'Fresh cottage cheese cubes in creamy spinach gravy', image: palakPaneerImg },
+  { id: '8', name: 'Naan', price: 50, description: 'Soft, fluffy traditional bread baked in tandoor', image: naanImg },
+  { id: '9', name: 'Tandoori Chicken', price: 600, description: 'Marinated chicken grilled to perfection in clay oven', image: tandooriChickenImg },
+  { id: '10', name: 'Seekh Kabab', price: 400, description: 'Minced meat skewers with spices, grilled over charcoal', image: seekhKababImg },
+  { id: '11', name: 'Nihari', price: 700, description: 'Slow-cooked beef stew with aromatic spices and bone marrow', image: nihariImg },
+  { id: '12', name: 'Haleem', price: 350, description: 'Thick stew of wheat, barley, meat and lentils', image: haleemImg },
+  { id: '13', name: 'Fish Tikka', price: 450, description: 'Marinated fish fillets grilled with herbs and spices', image: fishTikkaImg },
+  { id: '14', name: 'Chana Masala', price: 200, description: 'Chickpeas in tangy tomato and onion gravy', image: chanaMasalaImg },
+  { id: '15', name: 'Raita', price: 100, description: 'Cool yogurt with cucumber, mint and spices', image: raitaImg },
+  { id: '16', name: 'Gulab Jamun', price: 150, description: 'Sweet milk dumplings soaked in rose-flavored syrup', image: gulabJamunImg },
+];
+
 export default function Admin() {
-  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const [menuItems, setMenuItems] = useState<MenuItem[]>(initialMenuItems);
   const [users] = useState<User[]>(mockUsers);
-  const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
   const [formData, setFormData] = useState({ name: '', price: '', description: '' });
   const { toast } = useToast();
 
-  useEffect(() => {
-    loadMenu();
-  }, []);
-
-  const loadMenu = async () => {
-    try {
-      const data = await menuAPI.getAll();
-      setMenuItems(data);
-    } catch (error: any) {
-      toast({
-        title: 'Error',
-        description: error.response?.data?.message || 'Failed to load menu',
-        variant: 'destructive',
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!formData.name || !formData.price || !formData.description) {
@@ -74,34 +90,30 @@ export default function Admin() {
       return;
     }
 
-    try {
-      if (editingItem) {
-        await adminAPI.updateItem(editingItem.id, {
-          name: formData.name,
-          price: parseFloat(formData.price),
-          description: formData.description,
-        });
-        toast({ title: 'Success', description: 'Item updated successfully' });
-      } else {
-        await adminAPI.addItem({
-          name: formData.name,
-          price: parseFloat(formData.price),
-          description: formData.description,
-        });
-        toast({ title: 'Success', description: 'Item added successfully' });
-      }
-      
-      setDialogOpen(false);
-      setFormData({ name: '', price: '', description: '' });
-      setEditingItem(null);
-      loadMenu();
-    } catch (error: any) {
-      toast({
-        title: 'Error',
-        description: error.response?.data?.message || 'Operation failed',
-        variant: 'destructive',
-      });
+    if (editingItem) {
+      // Update existing item
+      setMenuItems(prev => prev.map(item => 
+        item.id === editingItem.id 
+          ? { ...item, name: formData.name, price: parseFloat(formData.price), description: formData.description }
+          : item
+      ));
+      toast({ title: 'Success', description: 'Item updated successfully' });
+    } else {
+      // Add new item
+      const newItem: MenuItem = {
+        id: Date.now().toString(),
+        name: formData.name,
+        price: parseFloat(formData.price),
+        description: formData.description,
+        image: biryaniImg, // Default image for new items
+      };
+      setMenuItems(prev => [...prev, newItem]);
+      toast({ title: 'Success', description: 'Item added successfully' });
     }
+    
+    setDialogOpen(false);
+    setFormData({ name: '', price: '', description: '' });
+    setEditingItem(null);
   };
 
   const handleEdit = (item: MenuItem) => {
@@ -114,20 +126,10 @@ export default function Admin() {
     setDialogOpen(true);
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = (id: string) => {
     if (!confirm('Are you sure you want to delete this item?')) return;
-
-    try {
-      await adminAPI.deleteItem(id);
-      toast({ title: 'Success', description: 'Item deleted successfully' });
-      loadMenu();
-    } catch (error: any) {
-      toast({
-        title: 'Error',
-        description: error.response?.data?.message || 'Delete failed',
-        variant: 'destructive',
-      });
-    }
+    setMenuItems(prev => prev.filter(item => item.id !== id));
+    toast({ title: 'Success', description: 'Item deleted successfully' });
   };
 
   const handleDialogClose = () => {
@@ -135,14 +137,6 @@ export default function Admin() {
     setEditingItem(null);
     setFormData({ name: '', price: '', description: '' });
   };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-secondary/30">
