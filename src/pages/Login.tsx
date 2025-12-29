@@ -44,26 +44,22 @@ export default function Login() {
     if (!validateForm()) return;
 
     setLoading(true);
-    try {
-      const response = await authAPI.login(formData);
-      
-      if (response.token) {
-        login(response.token, response.user);
-        toast({
-          title: 'Welcome back!',
-          description: 'Logged in successfully',
-        });
+    
+    // Mock authentication (demo only - not secure for production)
+    setTimeout(() => {
+      if (formData.email === 'admin@example.com' && formData.password === 'admin123') {
+        login('mock-token-admin', { id: '1', name: 'Admin User', email: formData.email, role: 'admin' });
+        toast({ title: 'Welcome back!', description: 'Logged in as Admin' });
+        navigate('/admin');
+      } else if (formData.email === 'user@example.com' && formData.password === 'user123') {
+        login('mock-token-user', { id: '2', name: 'Test User', email: formData.email, role: 'user' });
+        toast({ title: 'Welcome back!', description: 'Logged in successfully' });
         navigate('/');
+      } else {
+        toast({ title: 'Error', description: 'Invalid credentials. Try admin@example.com / admin123', variant: 'destructive' });
       }
-    } catch (error: any) {
-      toast({
-        title: 'Error',
-        description: error.response?.data?.message || 'Login failed. Please check your credentials.',
-        variant: 'destructive',
-      });
-    } finally {
       setLoading(false);
-    }
+    }, 500);
   };
 
   return (
